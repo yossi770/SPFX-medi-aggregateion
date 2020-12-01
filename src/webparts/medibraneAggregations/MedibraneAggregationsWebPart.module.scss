@@ -1,25 +1,51 @@
-@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+@import "~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss";
 
 .medibraneAggregations {
+  width: 100%;
   .container {
-    max-width: 700px;
+    width: 100%;
     margin: 0px auto;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .SumsDiv {
+    //@include ms-fontColor-white;
+    color: black;
+    background-color: rgb(86, 203, 207);
+    width: 30%;
+    float: right;
+    text-align: center;
+    margin-left: 18px;
+    margin-top: 20px;
+    height: 150px;
+    border-radius: 10%;
+    border-width: 3px;
+    border-collapse: collapse;
+    font-size: 15px;
+    border-style: outset;
+    font-family: monospace;
+
+    label {
+      font-weight: bolder;
+      font-size: 20px;
+    }
+  }
+
+  .labelDiv {
+    margin-top: 10px;
+    height: 20%;
+    width: 100%;
+    border-bottom: rgba(255, 255, 255, 0.561) groove 3px;
+    margin-bottom: 5px;
   }
 
   .row {
     @include ms-Grid-row;
     @include ms-fontColor-white;
-    background-color: $ms-color-themeDark;
-    padding: 20px;
-  }
+    width: 100%;
 
-  .column {
-    @include ms-Grid-col;
-    @include ms-lg10;
-    @include ms-xl8;
-    @include ms-xlPush2;
-    @include ms-lgPush1;
+    background-color: $ms-color-blueLight;
+    padding: 20px;
   }
 
   .title {
@@ -51,7 +77,8 @@
     // Basic Button
     outline: transparent;
     position: relative;
-    font-family: "Segoe UI WestEuropean","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
+    font-family: "Segoe UI WestEuropean", "Segoe UI", -apple-system,
+      BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     font-size: $ms-font-size-m;
     font-weight: $ms-font-weight-regular;

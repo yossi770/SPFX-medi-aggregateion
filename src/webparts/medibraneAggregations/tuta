@@ -1,0 +1,13 @@
+      let total = 0
+      let count = 0
+      for (let i = 0; i < arr.length; i++) {
+        const item = arr[i];
+        let date = item['Created'];
+        let month:string = String(date[5]+date[6])
+        if(month == this.mm){
+          total += item[fName]
+          count++
+        }
+      }
+      return [total , count];
+    }
