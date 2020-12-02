@@ -24,12 +24,47 @@ export interface IMedibraneAggregationsWebPartProps {
 
 export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<IMedibraneAggregationsWebPartProps> {
 
+  html:string;
+  protected get isRenderAsync(): boolean {
+    return true;
+  }
+
+  protected renderCompleted(): void {
+    console.log("renderCompleted");
+    this.domElement.innerHTML = `
+      <div class="${ styles.medibraneAggregations }">
+        <div class="${ styles.container }">
+          <div class="${ styles.row }">
+            <div>
+              ${this.html}
+            </div>
+          </div>
+        </div>
+      </div>`;
+      //<h2>Loading Data 11</h2><h2>Loading Data</h2><h2>Loading Data</h2>
+      //
+ 
+    super.renderCompleted();
+
+    //this.domElement.innerHTML = this.html;
+    //this.domElement.innerHTML = '<h2>Loading Data</h2><h2>Loading Data</h2><h2>Loading Data</h2>'
+
+    console.log("renderCompleted", this.domElement);
+  }
+
+  public renderError(){
+    console.log("renderError", this);
+
+  }
+
   public render(): void {
 /*
     this.getListItems('Quotes').then((items)=>{});
     this.getListItems('Orders').then((items)=>{});
     this.getListItems('Projects').then((items)=>{});
 */
+
+    this.domElement.innerHTML = '<h2>Loading Data</h2>'
 
     this.getListItems('Quotes');
     this.getListItems('Orders');
@@ -48,6 +83,8 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
 
   public buildHtml(){
+    console.log('buildHtml start');
+    
     let monthlyQuotes = [];
     let monthlyInvoices = [];
     let nextMonthInvoices = [];
@@ -55,10 +92,12 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     let lastMonthQuotes = [];
     let QuotesWaitingForResponse = [];
     let OrdersNotDelivered = [];
-    let monthlyOrders = []
+    let monthlyOrders = [];
 
 //*********************created value for all functions****************************/
     let Created = (item , value:string) => {
+      console.log('Created start');
+      
       let createdFullVal = item[value];
       if(createdFullVal==null){
         return -1;
@@ -70,6 +109,8 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     }
     //*****************leads count, and every level count***************************/
     let LeadsLevels = (arr:[], fName:string) => {
+      console.log('Created LeadsLevels');
+
       let count = 0;
           let a = 0;
           let b = 0;
@@ -92,6 +133,8 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
     /***************************quotes from this month and the last one**********/
     let QuotesWon = (arr:[], month:number) => {
+      console.log('QuotesWon');
+      
       if(month == 0){
         month = 12;
       }
@@ -117,6 +160,8 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     }
       /********orders this month compared to expectations and projs this month*******/
     let invoicesCompared = (status:string) => {
+      console.log('invoicesCompared start');
+      
       let nextMonth =this.mm+1 ==13 ? 1:this.mm+1;
       let iArr = this.listsContainer['Invoices']
       let pArr = this.listsContainer['Projects']
@@ -165,6 +210,8 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
           /************************************two parameters which are filtered by status***********************************/
     let filterByStatus = (arr:[], status:string) => {
+      console.log('filterByStatus start');
+      
       let returnVal = 0;
       for (let i = 0; i < arr.length; i++) {
         const item = arr[i];
@@ -182,6 +229,8 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
     /************************************returns orders count and amount,compares to expectations***********************************/
     let OrdersAndExpectations = (arr1 , arr2) =>{
+      console.log('OrdersAndExpectations start');
+
       let count:number = 0;
       let countSum:number = 0;
       let expectedOrders:number = 0;
@@ -216,10 +265,15 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     OrdersNotDelivered = filterByStatus(this.listsContainer['Orders'] , 'not finished')
     monthlyOrders = OrdersAndExpectations(this.listsContainer['Orders'] , this.listsContainer['Expectations'])
 
-    this.domElement.innerHTML = `
-      <div class="${ styles.medibraneAggregations }">
+    console.log('setting this.domElement.innerHTML');
+    
+    //this.domElement.innerHTML = `
+    this.html = `
+      <div>
+        <div>
+          <div class="${styles.flexCenterText}"}>
 
-            <section class="${ styles.SumsDiv }">
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>Monthly Leads </label>
               </div>
@@ -228,64 +282,78 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
               level b :  ${monthlyLeads[2]}</br>
               level c :  ${monthlyLeads[3]}</br>
               level d :  ${monthlyLeads[4]}</br>
-            </section>
+            </div>
 
-            <section class="${ styles.SumsDiv }">
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>Monthly Quotes </label></br>
               </div>
               quotes amount : ${monthlyQuotes[0]}</br>
               quotes won : ${monthlyQuotes[1]}%</br>
-            </section>
+            </div>
 
-            <section class="${ styles.SumsDiv }">
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>Quotes last month</label></br>
               </div>
               quotes amount : ${lastMonthQuotes[0]}</br>
               won quotes : ${lastMonthQuotes[1]}%</br>
-            </section>
+            </div>
 
-            <section class="${ styles.SumsDiv }">
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>Invoices this month</label> </br>
               </div>
               Invoices amount : ${monthlyInvoices[0]}</br>
               Projects amount : ${monthlyInvoices[1]}</br>
               Revenue expected :  ${monthlyInvoices[2]}
-            </section>
+            </div>
 
-            <section class="${ styles.SumsDiv }">
+          </div>
+        </div>
+
+        <div>
+          <div class="${styles.flexCenterText}"}>
+
+
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>Invoices next month</label></br>
               </div>
               invoices amount : ${nextMonthInvoices[0]}</br>
               expected income  : ${nextMonthInvoices[1]}</br>
-            </section>
+            </div>
 
-            <section class="${ styles.SumsDiv }">
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>Quotations waiting</label></br>
               </div>
               quotes amount : ${QuotesWaitingForResponse[0]}</br>
-            </section>
+            </div>
 
-            <section class="${ styles.SumsDiv }">
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>Not finished orders</label></br>
               </div>
               orders amount : ${OrdersNotDelivered[0]}</br>
-            </section>
+            </div>
 
-            <section class="${ styles.SumsDiv }">
+            <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
                 <label>monthly Orders</label></br>
               </div>
               number of orders  : ${monthlyOrders[0]}</br>
               expected number  : ${monthlyOrders[1]}</br>
               orders amount  : ${monthlyOrders[2]}</br>
-            </section>
+            </div>
+
+          </div>
+        </div>
+        
       </div>`;
+
+    console.log(this.domElement);
+    this.renderCompleted();
 
   }
 
