@@ -1,8 +1,7 @@
 @import "~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss";
 
 .medibraneAggregations {
-
-  .flexCenterText{
+  .flexCenterText {
     text-align: center;
     display: flex;
     justify-content: center;
@@ -13,28 +12,31 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
 
+  .SumsDiv:hover {
+    box-shadow: 1px 1px 8px #959292;
+  }
+
   .SumsDiv {
     //@include ms-fontColor-white;
     color: black;
-    background-color: rgb(86, 203, 207);
-    
-    width: 21%;
+    background-color: rgb(255, 255, 255);
+
+    width: 22%;
     display: inline-block;
 
     text-align: center;
     margin-left: 18px;
     margin-top: 20px;
-    height: 150px;
-    border-radius: 10%;
-    border-width: 3px;
-    border-collapse: collapse;
-    font-size: 15px;
-    border-style: outset;
-    font-family: monospace;
+    height: 170px;
+    border-radius: 5px;
+    font-size: 18px;
+    box-shadow: 1px 1px 8px #b4b3b3;
+    color: $ms-color-warningText;
 
     label {
       font-weight: bolder;
-      font-size: 20px;
+      font-size: 22px;
+      color: #305fd4;
     }
   }
 
@@ -49,7 +51,7 @@
     @include ms-Grid-row;
     @include ms-fontColor-white;
 
-    background-color: $ms-color-blueLight;
+    background-color: #eff1f5ec;
     padding: 20px;
   }
   .column {
