@@ -15,6 +15,6 @@ https://colorlib.com/wp/free-html5-admin-dashboard-templates/
 
 
 
-https://medibrane2.sharepoint.com/sites/Medibrane-Invoice-Dashboard/_layouts/15/workbench.aspx
+https://{tenant}/sites/{subsite}/_layouts/15/workbench.aspx
 
 
