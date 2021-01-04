@@ -43,7 +43,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
       </div>`;
       //<h2>Loading Data 11</h2><h2>Loading Data</h2><h2>Loading Data</h2>
       //
- 
+
     super.renderCompleted();
 
     //this.domElement.innerHTML = this.html;
@@ -84,7 +84,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
   public buildHtml(){
     console.log('buildHtml start');
-    
+
     let monthlyQuotes = [];
     let monthlyInvoices = [];
     let nextMonthInvoices = [];
@@ -97,7 +97,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 //*********************created value for all functions****************************/
     let Created = (item , value:string) => {
       console.log('Created start');
-      
+
       let createdFullVal = item[value];
       if(createdFullVal==null){
         return -1;
@@ -106,7 +106,35 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
       return month;
 
       return -1;//no month like -1
-    }
+    };
+
+//*****************start of weeks revenue function***************************/
+let getWeek = (d) =>{
+      let date:Date = new Date(d);
+      let thisDay = date.getDate();
+      console.log("today is ", thisDay);
+      let thisMonth = date.getMonth();
+      let thisYear = date.getFullYear();
+      let startDayOfMonth = new Date(thisYear,thisMonth,1);
+
+      console.log(startDayOfMonth.toString())
+
+      console.log("the one's day ", startDayOfMonth.getDay()+1)
+
+
+      let week = Math.ceil((thisDay+startDayOfMonth.getDay())/7);
+      console.log("the returned week"+week);
+      if(startDayOfMonth.getDay()+1 == 6 || startDayOfMonth.getDay()+1 == 7){
+        /*if the first day is friday or saturday, the week starts in the next week*/
+        console.log("first day of month is friday or saturday",week);
+        return week-1;
+      }
+      return week;
+    };
+
+//*****************end of weeks revenue function***************************/
+
+
     //*****************leads count, and every level count***************************/
     let LeadsLevels = (arr:[], fName:string) => {
       console.log('Created LeadsLevels');
@@ -134,7 +162,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     /***************************quotes from this month and the last one**********/
     let QuotesWon = (arr:[], month:number) => {
       console.log('QuotesWon');
-      
+
       if(month == 0){
         month = 12;
       }
@@ -161,12 +189,13 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
       /********orders this month compared to expectations and projs this month*******/
     let invoicesCompared = (status:string) => {
       console.log('invoicesCompared start');
-      
+
       let nextMonth =this.mm+1 ==13 ? 1:this.mm+1;
       let iArr = this.listsContainer['Invoices']
       let pArr = this.listsContainer['Projects']
       let eArr = this.listsContainer['Expectations']
       let monthly_Projects = 0;
+      let week = [0,0,0,0,0,0];
       let monthly_Invoices = 0;
       let incomeExpectations = 0;
       if(status == '1'){
@@ -181,6 +210,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
           }
         }
       }
+      /**********changes in this loop - revenue seperate by weeks************/
       for (let i = 0; i < pArr.length; i++) {
         const item = pArr[i];
         let deliveryMonth = Created(item,'Delivery_x0020_Date');
@@ -188,6 +218,13 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
           if(item['Order_x0020_Amount']!=null){
             console.log(item['Order_x0020_Amount'])
             monthly_Projects+=item['Order_x0020_Amount'];
+            /*start of treat the revenue seperate by weeks in loop*/
+            let weekIndex = getWeek(item['Delivery_x0020_Date']);
+            console.log(weekIndex-1);
+            if(weekIndex>=0){
+              week[weekIndex-1]+=item['Order_x0020_Amount'];
+            }
+            /*end of treat the revenue seperate by weeks in loop*/
             console.log('monthly projects' , monthly_Projects)
           }
         }
@@ -201,17 +238,17 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
       }
       console.log(monthly_Invoices+" "+incomeExpectations+" "+monthly_Projects)
       if(status == '1'){
-        return [monthly_Invoices,incomeExpectations,monthly_Projects];
+        return [monthly_Invoices,incomeExpectations,monthly_Projects, week];/**param week- for weeks revenue. if remove this part, remove this param */
       }
       console.log(incomeExpectations+" "+monthly_Projects)
-      return [monthly_Projects,incomeExpectations];
-    }
+      return [monthly_Projects,incomeExpectations,week];/**param week- for weeks revenue. if remove this part, remove this param */
+    };
 
 
           /************************************two parameters which are filtered by status***********************************/
     let filterByStatus = (arr:[], status:string) => {
       console.log('filterByStatus start');
-      
+
       let returnVal = 0;
       for (let i = 0; i < arr.length; i++) {
         const item = arr[i];
@@ -266,7 +303,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     monthlyOrders = OrdersAndExpectations(this.listsContainer['Orders'] , this.listsContainer['Expectations'])
 
     console.log('setting this.domElement.innerHTML');
-    
+
     //this.domElement.innerHTML = `
     this.html = `
       <div>
@@ -302,11 +339,21 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
             <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
-                <label>Invoices this month</label> </br>
+                <label>Revenues this month</label> </br>
               </div>
               Invoices amount : ${monthlyInvoices[0]}</br>
               Projects amount : ${monthlyInvoices[1]}</br>
-              Revenue expected :  ${monthlyInvoices[2]}
+              Revenue expected :  ${monthlyInvoices[2]}</br>
+              <table>
+                <tr><td>week1</td><td>week2</td><td>week3</td><td>week4</td><td>week5</td></tr>
+                <tr>
+                  <td>${monthlyInvoices[3][0]}</td>
+                  <td>${monthlyInvoices[3][1]}</td>
+                  <td>${monthlyInvoices[3][2]}</td>
+                  <td>${monthlyInvoices[3][3]}</td>
+                  <td>${monthlyInvoices[3][4]}</td>
+                </tr>
+              </table>
             </div>
 
           </div>
@@ -318,10 +365,22 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
             <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
-                <label>Invoices next month</label></br>
+                <label>Revenues next month</label></br>
               </div>
-              invoices amount : ${nextMonthInvoices[0]}</br>
+              Revenue expected : ${nextMonthInvoices[0]}</br>
               expected income  : ${nextMonthInvoices[1]}</br>
+              <table>
+                <tr>
+                  <td>week1</td><td>week2</td><td>week3</td><td>week4</td><td>week5</td>
+                </tr>
+                <tr>
+                  <td>${nextMonthInvoices[2][0]}</td>
+                  <td>${nextMonthInvoices[2][1]}</td>
+                  <td>${nextMonthInvoices[2][2]}</td>
+                  <td>${nextMonthInvoices[2][3]}</td>
+                  <td>${nextMonthInvoices[2][4]}</td>
+                </tr>
+              </table>
             </div>
 
             <div class="${ styles.SumsDiv }">
@@ -349,7 +408,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
           </div>
         </div>
-        
+
       </div>`;
 
     console.log(this.domElement);
