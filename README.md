@@ -32,3 +32,5 @@ https://{tenant}/sites/{subsite}/_layouts/15/workbench.aspx
 8. drag `.sppkg` file
 9. checkbox according to need
 10. if not 1st time, do check in
+11. if stuck refresh page, make sure that file is checked in
+
