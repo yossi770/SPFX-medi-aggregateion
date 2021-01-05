@@ -112,7 +112,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 let getWeek = (d) =>{
       let date:Date = new Date(d);
       let thisDay = date.getDate();
-      console.log("today is ", thisDay);
+      console.log("getWeek :: today is ", thisDay);
       let thisMonth = date.getMonth();
       let thisYear = date.getFullYear();
       let startDayOfMonth = new Date(thisYear,thisMonth,1);
@@ -189,6 +189,7 @@ let getWeek = (d) =>{
       /********orders this month compared to expectations and projs this month*******/
     let invoicesCompared = (status:string) => {
       console.log('invoicesCompared start');
+      debugger
 
       let nextMonth =this.mm+1 ==13 ? 1:this.mm+1;
       let iArr = this.listsContainer['Invoices']
@@ -211,12 +212,18 @@ let getWeek = (d) =>{
         }
       }
       /**********changes in this loop - revenue seperate by weeks************/
+      console.log('invoicesCompared for (let i = 0; i < pArr.length; i++)', pArr);
       for (let i = 0; i < pArr.length; i++) {
         const item = pArr[i];
         let deliveryMonth = Created(item,'Delivery_x0020_Date');
-        if(deliveryMonth == this.mm && status =='1' || deliveryMonth == nextMonth && status =='0'){
+        
+        console.log('invoicesCompared if deliveryMonth ... ', ((deliveryMonth == this.mm && status =='1') || (deliveryMonth == nextMonth && status =='0')));
+        if((deliveryMonth == this.mm && status =='1') || (deliveryMonth == nextMonth && status =='0')){
+          
+          console.log('invoicesCompared if Order_x0020_Amount ... ', (item['Order_x0020_Amount']!=null));
           if(item['Order_x0020_Amount']!=null){
             console.log(item['Order_x0020_Amount'])
+
             monthly_Projects+=item['Order_x0020_Amount'];
             /*start of treat the revenue seperate by weeks in loop*/
             let weekIndex = getWeek(item['Delivery_x0020_Date']);
