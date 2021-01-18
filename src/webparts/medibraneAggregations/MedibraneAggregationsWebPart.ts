@@ -169,34 +169,75 @@ let getWeek = (d) =>{
       let count:number = 0;
       let countSum:number = 0;
       let countWon:number = 0;
+      let percent:number = 0;
+      let seperateByTypes = [0,0,0]
+      let wonByTypes = [0,0,0];
+      let wonPercent = [0,0,0]
       for (let i = 0; i < arr.length; i++) {
         const item = arr[i];
         let created = Created(item,'Created');
         let QuotaAmount = item['Quota_x0020_amount'];
         if(created == month){
           count++;
+          switch (item['Lead_x0020_type']) {
+            case 'II':
+              seperateByTypes[0]++;
+              if(item['Quota_x0020_status'] == "Won"){
+                wonByTypes[0]++;
+              }
+              break;
+            case 'III':
+              seperateByTypes[1]++;
+              if(item['Quota_x0020_status'] == "Won"){
+                wonByTypes[1]++;
+              }
+              break;
+            case 'IV':
+              seperateByTypes[2]++;
+              if(item['Quota_x0020_status'] == "Won"){
+                wonByTypes[2]++;
+              }
+              break;
+          }
+
           countSum += QuotaAmount;
-          if(item['Quota_x0020_status'] == "Won"){
+          if(item['Quota_x0020_status'] == "Won"){/*TODO table of 3 lead types*/
             countWon++;
           }
         }
       }
-      let percent:number = countWon*100/count;
-      if(count==0){percent = 0}
-      return [countSum ,percent.toFixed(0)]
+
+      console.log("the seperate arr",seperateByTypes[0],seperateByTypes[1],seperateByTypes[2])
+      for(let i=0;i<3;i++){
+        if(seperateByTypes[i]!=0){
+          wonPercent[i]=parseInt(((wonByTypes[i]*100)/seperateByTypes[i]).toFixed(0));
+        }
+        else{
+          wonPercent[i]=0;
+        }
+        console.log("wonPercent",i,wonPercent[i]);
+      }
+
+      if(count!=0){
+        percent = countWon*100/count;
+      }
+      return [countSum.toFixed(0) ,percent.toFixed(0),wonPercent]
 
     }
       /********orders this month compared to expectations and projs this month*******/
     let invoicesCompared = (status:string) => {
       console.log('invoicesCompared start');
-      debugger
+      //debugger
 
       let nextMonth =this.mm+1 ==13 ? 1:this.mm+1;
       let iArr = this.listsContainer['Invoices']
       let pArr = this.listsContainer['Projects']
       let eArr = this.listsContainer['Expectations']
       let monthly_Projects = 0;
-      let week = [0,0,0,0,0,0];
+      let projectWeek = [0,0,0,0,0];
+      let invoiceWeek = [0,0,0,0,0];
+      let PerformedInPercent = [0,0,0,0,0]
+
       let monthly_Invoices = 0;
       let incomeExpectations = 0;
       if(status == '1'){
@@ -208,18 +249,24 @@ let getWeek = (d) =>{
             if (status == 'An invoice was issued'){
               monthly_Invoices+=item['Order_x0020_Amount'];
             }
+            let weekIndex = getWeek(item['Created']);
+            console.log(weekIndex-1);
+            if(weekIndex>=0){
+              invoiceWeek[weekIndex-1]+=item['Order_x0020_Amount'];
+            }
           }
         }
+        console.log('invoiceweek**************'+invoiceWeek[1])
       }
       /**********changes in this loop - revenue seperate by weeks************/
       console.log('invoicesCompared for (let i = 0; i < pArr.length; i++)', pArr);
       for (let i = 0; i < pArr.length; i++) {
         const item = pArr[i];
         let deliveryMonth = Created(item,'Delivery_x0020_Date');
-        
+
         console.log('invoicesCompared if deliveryMonth ... ', ((deliveryMonth == this.mm && status =='1') || (deliveryMonth == nextMonth && status =='0')));
         if((deliveryMonth == this.mm && status =='1') || (deliveryMonth == nextMonth && status =='0')){
-          
+
           console.log('invoicesCompared if Order_x0020_Amount ... ', (item['Order_x0020_Amount']!=null));
           if(item['Order_x0020_Amount']!=null){
             console.log(item['Order_x0020_Amount'])
@@ -229,13 +276,26 @@ let getWeek = (d) =>{
             let weekIndex = getWeek(item['Delivery_x0020_Date']);
             console.log(weekIndex-1);
             if(weekIndex>=0){
-              week[weekIndex-1]+=item['Order_x0020_Amount'];
+              projectWeek[weekIndex-1]+=item['Order_x0020_Amount'];
             }
             /*end of treat the revenue seperate by weeks in loop*/
             console.log('monthly projects' , monthly_Projects)
           }
         }
       }
+
+      for(let i=0; i<5;i++){
+        projectWeek[i].toFixed(0);
+        if(projectWeek[i]==0){
+          PerformedInPercent[i]=0;
+        }
+        else{
+          PerformedInPercent[i]=((invoiceWeek[i]*100)/projectWeek[i]);
+          PerformedInPercent[i] = Number(PerformedInPercent[i].toFixed(0));
+        }
+        console.log("------------the preformed by weeks",PerformedInPercent[i]);
+      }
+
       for (let i = 0; i < eArr.length; i++) {
         const item = eArr[i];
         let exMonth = Created(item,'Date1');
@@ -245,10 +305,10 @@ let getWeek = (d) =>{
       }
       console.log(monthly_Invoices+" "+incomeExpectations+" "+monthly_Projects)
       if(status == '1'){
-        return [monthly_Invoices,incomeExpectations,monthly_Projects, week];/**param week- for weeks revenue. if remove this part, remove this param */
+        return [monthly_Invoices.toFixed(0),incomeExpectations.toFixed(0),monthly_Projects.toFixed(0), projectWeek,PerformedInPercent];/**param week- for weeks revenue. if remove this part, remove this param */
       }
       console.log(incomeExpectations+" "+monthly_Projects)
-      return [monthly_Projects,incomeExpectations,week];/**param week- for weeks revenue. if remove this part, remove this param */
+      return [monthly_Projects.toFixed(0),incomeExpectations.toFixed(0),projectWeek];/**param week- for weeks revenue. if remove this part, remove this param */
     };
 
 
@@ -263,12 +323,13 @@ let getWeek = (d) =>{
           returnVal+=item['Quota_x0020_amount']
         }
         if(status == 'not finished' &&(item['Order_x0020_status'] == 'received'||item['Order_x0020_status'] == 'transferred to execution') &&item['Order_x0020_Amount']!=null){
+
           returnVal+=item['Order_x0020_Amount']
         }
 
       }
-      console.log(returnVal)
-      return[returnVal]
+      console.log("returnVal",returnVal)
+      return[returnVal.toFixed(0)];
     }
 
     /************************************returns orders count and amount,compares to expectations***********************************/
@@ -294,7 +355,7 @@ let getWeek = (d) =>{
           expectedOrders += item['Expect_x0020_monthly_x0020_order']
         }
       }
-      return [count ,expectedOrders, countSum]
+      return [count ,expectedOrders, countSum.toFixed(0)]
     }
 
 
@@ -334,6 +395,18 @@ let getWeek = (d) =>{
               </div>
               quotes amount : ${monthlyQuotes[0]}</br>
               quotes won : ${monthlyQuotes[1]}%</br>
+              <table>
+                <tr>
+                  <td>type II</td>
+                  <td>type III</td>
+                  <td>type IV</td>
+                </tr>
+                <tr>
+                  <td> ${monthlyQuotes[2][0]}%</td>
+                  <td> ${monthlyQuotes[2][1]}%</td>
+                  <td> ${monthlyQuotes[2][2]}%</td>
+                </tr>
+              </table>
             </div>
 
             <div class="${ styles.SumsDiv }">
@@ -342,6 +415,19 @@ let getWeek = (d) =>{
               </div>
               quotes amount : ${lastMonthQuotes[0]}</br>
               won quotes : ${lastMonthQuotes[1]}%</br>
+              <table>
+              <tr>
+                <td>type II</td>
+                <td>type III</td>
+                <td>type IV</td>
+              </tr>
+              <tr>
+                <td> ${lastMonthQuotes[2][0]}%</td>
+                <td> ${lastMonthQuotes[2][1]}%</td>
+                <td> ${lastMonthQuotes[2][2]}%</td>
+              </tr>
+            </table>
+
             </div>
 
             <div class="${ styles.SumsDiv }">
@@ -360,6 +446,14 @@ let getWeek = (d) =>{
                   <td>${monthlyInvoices[3][3]}</td>
                   <td>${monthlyInvoices[3][4]}</td>
                 </tr>
+                <tr>
+                  <td>${monthlyInvoices[4][0]}%</td>
+                  <td>${monthlyInvoices[4][1]}%</td>
+                  <td>${monthlyInvoices[4][2]}%</td>
+                  <td>${monthlyInvoices[4][3]}%</td>
+                  <td>${monthlyInvoices[4][4]}%</td>
+                </tr>
+
               </table>
             </div>
 
@@ -399,7 +493,7 @@ let getWeek = (d) =>{
 
             <div class="${ styles.SumsDiv }">
               <div class = "${ styles.labelDiv }">
-                <label>Not finished orders</label></br>
+                <label>Backlog</label></br>
               </div>
               orders amount : ${OrdersNotDelivered[0]}</br>
             </div>
