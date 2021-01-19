@@ -201,7 +201,7 @@ let getWeek = (d) =>{
           }
 
           countSum += QuotaAmount;
-          if(item['Quota_x0020_status'] == "Won"){/*TODO table of 3 lead types*/
+          if(item['Quota_x0020_status'] == "Won"){
             countWon++;
           }
         }
@@ -314,7 +314,8 @@ let getWeek = (d) =>{
 
           /************************************two parameters which are filtered by status***********************************/
     let filterByStatus = (arr:[], status:string) => {
-      console.log('filterByStatus start');
+      console.log('filterByStatus start');/**TODO column name = Activity_x0020_type */
+      let countByActivityTypes = [0,0,0,0];
 
       let returnVal = 0;
       for (let i = 0; i < arr.length; i++) {
@@ -322,13 +323,37 @@ let getWeek = (d) =>{
         if(status == 'Waiting for customer response' && item['Quota_x0020_status'] == status &&item['Quota_x0020_amount']!=null){
           returnVal+=item['Quota_x0020_amount']
         }
-        if(status == 'not finished' &&(item['Order_x0020_status'] == 'received'||item['Order_x0020_status'] == 'transferred to execution') &&item['Order_x0020_Amount']!=null){
+        if(status == 'not finished' &&item['Order_x0020_status'] != 'ended'&&item['Order_x0020_status'] != 'sent to customer' &&item['Order_x0020_Amount']!=null){
 
           returnVal+=item['Order_x0020_Amount']
+          switch(item['Activity_x0020_type']){
+            case 'Prototyping':
+              countByActivityTypes[0]+=item['Order_x0020_Amount'];
+              break;
+            case 'Mprep':
+              countByActivityTypes[1]+=item['Order_x0020_Amount'];
+              break;
+            case 'Clinical Builds':
+              countByActivityTypes[2]+=item['Order_x0020_Amount'];
+              break;
+            case 'Manufacturing':
+              countByActivityTypes[3]+=item['Order_x0020_Amount'];
+              break;
+          }
         }
 
       }
+
+      if(status == 'not finished'){
+        for(let t=0;t<countByActivityTypes.length;t++){
+          countByActivityTypes[t] = parseInt(countByActivityTypes[t].toFixed(0));
+          console.log("countByActivityTypes",t,countByActivityTypes[t]);
+        }
+      }
       console.log("returnVal",returnVal)
+      if(status == 'not finished'){
+        return[returnVal.toFixed(0),countByActivityTypes];
+      }
       return[returnVal.toFixed(0)];
     }
 
@@ -496,6 +521,20 @@ let getWeek = (d) =>{
                 <label>Backlog</label></br>
               </div>
               orders amount : ${OrdersNotDelivered[0]}</br>
+              <table>
+                <tr>
+                  <td class="${ styles.specTd }">Prototyping</td>
+                  <td class="${ styles.specTd }">Mprep</td>
+                  <td class="${ styles.specTd }">Clinical Builds</td>
+                  <td class="${ styles.specTd }">Manufacturing</td>
+                </tr>
+                <tr>
+                  <td> ${OrdersNotDelivered[1][0]}</td>
+                  <td> ${OrdersNotDelivered[1][1]}</td>
+                  <td> ${OrdersNotDelivered[1][2]}</td>
+                  <td> ${OrdersNotDelivered[1][3]}</td>
+                </tr>
+              </table>
             </div>
 
             <div class="${ styles.SumsDiv }">
