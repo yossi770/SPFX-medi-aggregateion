@@ -1,0 +1,65 @@
+{
+  "id": "b6b152e7-69c4-4357-a26f-65ee0c6881a4",
+  "alias": "MedibraneAggregationsWebPart",
+  "componentType": "WebPart",
+  "version": "1.2.0",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart"
+  ],
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Other"
+      },
+      "title": {
+        "default": "medibrane_aggregations"
+      },
+      "description": {
+        "default": "medibrane_aggregations description"
+      },
+      "officeFabricIconFontName": "Page",
+      "properties": {
+        "description": "medibrane_aggregations"
+      }
+    }
+  ],
+  "loaderConfig": {
+    "internalModuleBaseUrls": [
+      "<!-- PATH TO CDN -->"
+    ],
+    "entryModuleId": "medibrane-aggregations-web-part",
+    "scriptResources": {
+      "medibrane-aggregations-web-part": {
+        "type": "path",
+        "path": "medibrane-aggregations-web-part_15be33056ff85c9a8b20.js"
+      },
+      "@microsoft/sp-property-pane": {
+        "type": "component",
+        "id": "f9e737b7-f0df-4597-ba8c-3060f82380db",
+        "version": "1.12.1"
+      },
+      "MedibraneAggregationsWebPartStrings": {
+        "type": "path",
+        "path": "MedibraneAggregationsWebPartStrings_en-us_536e65149b0acf4d52c0043073b9fc59.js"
+      },
+      "@microsoft/sp-core-library": {
+        "type": "component",
+        "id": "7263c7d0-1d6a-45ec-8d85-d4d1d234171b",
+        "version": "1.12.1"
+      },
+      "@microsoft/sp-webpart-base": {
+        "type": "component",
+        "id": "974a7777-0990-4136-8fa6-95d80114c2e0",
+        "version": "1.12.1"
+      },
+      "@microsoft/sp-http": {
+        "type": "component",
+        "id": "c07208f0-ea3b-4c1a-9965-ac1b825211a6",
+        "version": "1.12.1"
+      }
+    }
+  }
+}

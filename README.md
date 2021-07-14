@@ -34,3 +34,6 @@ https://{tenant}/sites/{subsite}/_layouts/15/workbench.aspx
 10. if not 1st time, do check in
 11. if stuck refresh page, make sure that file is checked in
 
+
+
+gulp build; gulp bundle --ship; gulp package-solution --ship

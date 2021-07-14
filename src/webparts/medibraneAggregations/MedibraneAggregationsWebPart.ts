@@ -1,3 +1,4 @@
+/* tslint:disable */
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
@@ -179,7 +180,9 @@ let getWeek = (d) =>{
       let wonPercent = [0,0,0]
       for (let i = 0; i < arr.length; i++) {
         const item = arr[i];
-        let created = Created(item,'Created');
+        //let created = Created(item,'Created');
+        let created = Created(item,'project_x0020_sending_x0020_date');
+        
         let QuotaAmount = item['Quota_x0020_amount'];
         if(created == month){
           count++;
