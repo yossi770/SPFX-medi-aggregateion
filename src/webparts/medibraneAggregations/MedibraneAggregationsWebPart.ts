@@ -69,7 +69,11 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
     this.getListItems('Quotes');
     this.getListItems('Orders');
-    this.getListItems('Projects');
+    //this.getListItems('Projects');//
+    this.getListItems('Application Development Lab (ADL)', 'Projects');
+    this.getListItems('Advanced Development', 'Projects');
+    this.getListItems('Manufacturing', 'Projects');
+
     this.getListItems('Invoices');
     this.getListItems('Leads');
     this.getListItems('Expectations');
@@ -611,7 +615,7 @@ let getWeek = (d) =>{
 
 
 //**************************** returns the full lists *************************/
-    public getListItems(listname:string): void {
+    public getListItems(listname:string, listContainerName:string = null): void {
 
       console.log('asking list items for', listname);
       this.ajaxCounter++;
@@ -624,7 +628,18 @@ let getWeek = (d) =>{
 
                     console.log('list items for', listname, data);
                     this.ajaxCounter--;
-                    this.listsContainer[listname] = data.value;
+                    if (listContainerName) {
+
+                      if (this.listsContainer[listContainerName]) {
+                        this.listsContainer[listContainerName] = this.listsContainer[listContainerName].concat(data.value)
+                      } else {
+                        this.listsContainer[listContainerName] = data.value;
+                      }
+
+                    } else {
+                      this.listsContainer[listname] = data.value;
+                    }
+
                     if (this.ajaxCounter == 0) {
                       this.buildHtml();
                     }
