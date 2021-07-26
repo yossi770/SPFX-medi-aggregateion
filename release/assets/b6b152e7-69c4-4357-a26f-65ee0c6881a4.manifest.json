@@ -34,7 +34,7 @@
     "scriptResources": {
       "medibrane-aggregations-web-part": {
         "type": "path",
-        "path": "medibrane-aggregations-web-part_2b654d91082b6615e783.js"
+        "path": "medibrane-aggregations-web-part_d3b6c020b1770edb019a.js"
       },
       "@microsoft/sp-property-pane": {
         "type": "component",

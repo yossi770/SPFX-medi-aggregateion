@@ -69,10 +69,10 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
     this.getListItems('Quotes');
     this.getListItems('Orders');
-    //this.getListItems('Projects');//
-    this.getListItems('Application Development Lab (ADL)', 'Projects');
-    this.getListItems('Advanced Development', 'Projects');
-    this.getListItems('Manufacturing', 'Projects');
+    this.getListItems('Projects');//
+    //this.getListItems('Application Development Lab (ADL)', 'Projects');
+    //this.getListItems('Advanced Development', 'Projects');
+    //this.getListItems('Manufacturing', 'Projects');
 
     this.getListItems('Invoices');
     this.getListItems('Leads');
