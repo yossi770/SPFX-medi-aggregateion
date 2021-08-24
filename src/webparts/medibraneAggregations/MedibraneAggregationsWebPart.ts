@@ -31,7 +31,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
   }
 
   protected renderCompleted(): void {
-    console.log("renderCompleted");
+    // console.log("renderCompleted");
     this.domElement.innerHTML = `
       <div class="${ styles.medibraneAggregations }">
         <div class="${ styles.container }">
@@ -50,11 +50,11 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     //this.domElement.innerHTML = this.html;
     //this.domElement.innerHTML = '<h2>Loading Data</h2><h2>Loading Data</h2><h2>Loading Data</h2>'
 
-    console.log("renderCompleted", this.domElement);
+    // console.log("renderCompleted", this.domElement);
   }
 
   public renderError(){
-    console.log("renderError", this);
+    // console.log("renderError", this);
 
   }
 
@@ -80,6 +80,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
 
   }
+  
 //*************************globals****************************/
   ajaxCounter:number = 0;
   listsContainer:{} = {};
@@ -88,7 +89,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
 
   public buildHtml(){
-    console.log('buildHtml start');
+    // console.log('buildHtml start');
 
     let monthlyQuotes = [];
     let monthlyInvoices = [];
@@ -101,14 +102,14 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 
 //*********************created value for all functions****************************/
     let Created = (item , value:string) => {
-      console.log('Created start');
+      // console.log('Created start');
 
       let createdFullVal:Date = new Date(item[value]);
       if(createdFullVal==null){
         return -1;
       }
       let month:number = createdFullVal.getMonth()+1;
-      console.log('the created is: '+month);
+      // console.log('the created is: '+month);
       return month;
 
       return -1;//no month like -1
@@ -118,21 +119,21 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
 let getWeek = (d) =>{
       let date:Date = new Date(d);
       let thisDay = date.getDate();
-      console.log("getWeek :: today is ", thisDay);
+      // console.log("getWeek :: today is ", thisDay);
       let thisMonth = date.getMonth();
       let thisYear = date.getFullYear();
       let startDayOfMonth = new Date(thisYear,thisMonth,1);
 
-      console.log(startDayOfMonth.toString())
+      // console.log(startDayOfMonth.toString())
 
-      console.log("the one's day ", startDayOfMonth.getDay()+1)
+      // console.log("the one's day ", startDayOfMonth.getDay()+1)
 
 
       let week = Math.ceil((thisDay+startDayOfMonth.getDay())/7);
-      console.log("the returned week"+week);
+      // console.log("the returned week"+week);
       if(startDayOfMonth.getDay()+1 == 6 || startDayOfMonth.getDay()+1 == 7){
         /*if the first day is friday or saturday, the week starts in the next week*/
-        console.log("first day of month is friday or saturday",week);
+        // console.log("first day of month is friday or saturday",week);
         return week-1;
       }
       return week;
@@ -143,7 +144,7 @@ let getWeek = (d) =>{
 
     //*****************leads count, and every level count***************************/
     let LeadsLevels = (arr:[], fName:string) => {
-      console.log('Created LeadsLevels');
+      // console.log('Created LeadsLevels');
 
       let count = 0;
           let a = 0;
@@ -167,7 +168,7 @@ let getWeek = (d) =>{
 
     /***************************quotes from this month and the last one**********/
     let QuotesWon = (arr:[], month:number) => {
-      console.log('QuotesWon');
+      // console.log('QuotesWon');
 
       if(month == 0){
         month = 12;
@@ -218,7 +219,7 @@ let getWeek = (d) =>{
         }
       }
 
-      console.log("the seperate arr",seperateByTypes[0],seperateByTypes[1],seperateByTypes[2])
+      // console.log("the seperate arr",seperateByTypes[0],seperateByTypes[1],seperateByTypes[2])
 
       for(let i=0;i<3;i++){
         if(seperateByTypes[i]!=0){
@@ -241,13 +242,34 @@ let getWeek = (d) =>{
           qoutesEx = item['QuotesBudges'];
         }
       }
-      console.log("the quotes amount for month ", month, " is ", qoutesEx);
+      // console.log("the quotes amount for month ", month, " is ", qoutesEx);
 
 
 
       return [countSum.toFixed(0) ,percent.toFixed(0),wonPercent,qoutesEx];
 
     }
+
+    // Backlog fun
+    let OrdersSum:number = 0;
+    let ProjectsSum:number = 0;
+    let Orders = this.listsContainer['Orders'].filter(i => true === ( i["Order_x0020_status"] != "sent to customer" && i["Order_x0020_status"] != "ended") )
+    let Projects = this.listsContainer['Projects'].filter(i => true === (i["Project_x0020_Status"] != "Summary" && i["Project_x0020_Status"] != "Sent to customer" && i["Project_x0020_Status"] != "ended"))
+    for (let i = 0; i < Projects.length; i++) {
+      const item = Projects[i];
+      if (item["Order_x0020_Amount"]){
+        // console.log(item["Order_x0020_Amount"]);
+        ProjectsSum = ProjectsSum + item["Order_x0020_Amount"]
+      }
+    }
+    for (let i = 0; i < Orders.length; i++) {
+      const item = Orders[i];
+      if (item["lefttopay"]){
+        // console.log(item["lefttopay"]);
+        OrdersSum = OrdersSum + item["lefttopay"]
+      }
+    }
+
       /********orders this month compared to expectations and projs this month*******/
     let invoicesCompared = (status:string) => {
       console.log('invoicesCompared start');
@@ -271,48 +293,48 @@ let getWeek = (d) =>{
           let status = item['Invoice_x0020_Status'];
           if(createdMonth == this.mm){
             if (status == 'An invoice was issued'){
-              monthly_Invoices+=item['Order_x0020_Amount'];
+              monthly_Invoices+=item['InvoiceAmount'];
             }
             let weekIndex = getWeek(item['Created']);
-            console.log(weekIndex-1);
+            // console.log(weekIndex-1);
             if(weekIndex>=0){
-              invoiceWeek[weekIndex-1]+=item['Order_x0020_Amount'];
+              invoiceWeek[weekIndex-1]+=item['InvoiceAmount'];
             }
           }
         }
-        console.log('invoiceweek**************'+invoiceWeek[1])
+        // console.log('invoiceweek**************'+invoiceWeek[1])
       }
       /**********changes in this loop - revenue seperate by weeks************/
-      console.log('invoicesCompared for (let i = 0; i < pArr.length; i++)', pArr);
+      // console.log('invoicesCompared for (let i = 0; i < pArr.length; i++)', pArr);
       for (let i = 0; i < pArr.length; i++) {
         const item = pArr[i];
         let x:Date = new Date(item['Delivery_x0020_Date'])
         let deliveryMonth = x.getMonth()+1;
-        console.log('the x', deliveryMonth)
+        // console.log('the x', deliveryMonth)
 
 
-        console.log('invoicesCompared if deliveryMonth ... ', ((deliveryMonth == this.mm && status =='1') || (deliveryMonth == nextMonth && status =='0')));
+        // console.log('invoicesCompared if deliveryMonth ... ', ((deliveryMonth == this.mm && status =='1') || (deliveryMonth == nextMonth && status =='0')));
         if((deliveryMonth == this.mm && status =='1') || (deliveryMonth == nextMonth && status =='0')){
 
-          console.log('invoicesCompared if Order_x0020_Amount ... ', (item['Order_x0020_Amount']!=null));
+          // console.log('invoicesCompared if Order_x0020_Amount ... ', (item['Order_x0020_Amount']!=null));
           if(item['Order_x0020_Amount']!=null){
-            console.log(item['Order_x0020_Amount'])
+            // console.log(item['Order_x0020_Amount'])
             monthly_Projects+=item['Order_x0020_Amount'];
             /*start of treat the revenue seperate by weeks in loop*/
             let weekIndex = getWeek(item['Delivery_x0020_Date']);
-            console.log(weekIndex-1);
+            // console.log(weekIndex-1);
             if(weekIndex>=0){
               projectWeek[weekIndex-1]+=item['Order_x0020_Amount'];
             }
             /*end of treat the revenue seperate by weeks in loop*/
             if(status=='1'){
-              console.log('monthly projects, my month is' , monthly_Projects, item['Delivery_x0020_Date'],item['Order_x0020_Amount']);
+              // console.log('monthly projects, my month is' , monthly_Projects, item['Delivery_x0020_Date'],item['Order_x0020_Amount']);
             }
           }
         }
       }
 
-      console.log('monthly project amount ', monthly_Projects);
+      // console.log('monthly project amount ', monthly_Projects);
 
       for(let i=0; i<5;i++){
         projectWeek[i].toFixed(0);
@@ -323,7 +345,7 @@ let getWeek = (d) =>{
           PerformedInPercent[i]=((invoiceWeek[i]*100)/projectWeek[i]);
           PerformedInPercent[i] = Number(PerformedInPercent[i].toFixed(0));
         }
-        console.log("------------the preformed by weeks",PerformedInPercent[i]);
+        // console.log("------------the preformed by weeks",PerformedInPercent[i]);
       }
 
       for (let i = 0; i < eArr.length; i++) {
@@ -333,18 +355,18 @@ let getWeek = (d) =>{
           incomeExpectations = item['Monthly_x0020_income_x0020_forec'];
         }
       }
-      console.log(monthly_Invoices+" "+incomeExpectations+" "+monthly_Projects)
+      // console.log(monthly_Invoices+" "+incomeExpectations+" "+monthly_Projects)
       if(status == '1'){
         return [monthly_Invoices.toFixed(0),incomeExpectations.toFixed(0),monthly_Projects.toFixed(0), projectWeek,PerformedInPercent];/**param week- for weeks revenue. if remove this part, remove this param */
       }
-      console.log(incomeExpectations+" "+monthly_Projects)
+      // console.log(incomeExpectations+" "+monthly_Projects)
       return [monthly_Projects.toFixed(0),incomeExpectations.toFixed(0),projectWeek];/**param week- for weeks revenue. if remove this part, remove this param */
     };
 
 
           /************************************two parameters which are filtered by status***********************************/
     let filterByStatus = (arr:[], status:string) => {
-      console.log('filterByStatus start');/**TODO column name = Activity_x0020_type */
+      // console.log('filterByStatus start');/**TODO column name = Activity_x0020_type */
       let countByActivityTypes = [0,0,0,0];
 
       let returnVal = 0;
@@ -353,7 +375,7 @@ let getWeek = (d) =>{
         if(status == 'Waiting for customer response' && item['Quota_x0020_status'] == status &&item['Quota_x0020_amount']!=null){
           returnVal+=item['Quota_x0020_amount']
         }
-        if(status == 'not finished' &&item['Order_x0020_status'] != 'ended'&&item['Order_x0020_status'] != 'sent to customer' &&item['Order_x0020_Amount']!=null){
+        if(status == 'not finished' &&item['Order_x0020_status'] != 'ended'&&item['Order_x0020_status'] != 'Sent to customer' &&item['Order_x0020_Amount']!=null){
 
           returnVal+=item['Order_x0020_Amount']
           switch(item['Activity_x0020_type']){
@@ -377,10 +399,10 @@ let getWeek = (d) =>{
       if(status == 'not finished'){
         for(let t=0;t<countByActivityTypes.length;t++){
           countByActivityTypes[t] = parseInt(countByActivityTypes[t].toFixed(0));
-          console.log("countByActivityTypes",t,countByActivityTypes[t]);
+          // console.log("countByActivityTypes",t,countByActivityTypes[t]);
         }
       }
-      console.log("returnVal",returnVal)
+      // console.log("returnVal",returnVal)
       if(status == 'not finished'){
         return[returnVal.toFixed(0),countByActivityTypes];
       }
@@ -389,7 +411,7 @@ let getWeek = (d) =>{
 
     /************************************returns orders count and amount,compares to expectations***********************************/
     let OrdersAndExpectations = (arr1 , arr2) =>{
-      console.log('OrdersAndExpectations start');
+      // console.log('OrdersAndExpectations start');
 
       let count:number = 0;
       let countSum:number = 0;
@@ -425,7 +447,7 @@ let getWeek = (d) =>{
     OrdersNotDelivered = filterByStatus(this.listsContainer['Orders'] , 'not finished')
     monthlyOrders = OrdersAndExpectations(this.listsContainer['Orders'] , this.listsContainer['Expectations'])
 
-    console.log('setting this.domElement.innerHTML');
+    // console.log('setting this.domElement.innerHTML');
 
     //this.domElement.innerHTML = `
     this.html = `
@@ -551,21 +573,8 @@ let getWeek = (d) =>{
               <div class = "${ styles.labelDiv }">
                 <label>Backlog</label></br>
               </div>
-              orders amount : ${OrdersNotDelivered[0]}</br>
-              <table>
-                <tr>
-                  <td class="${ styles.specTd }">Prototyping</td>
-                  <td class="${ styles.specTd }">Mprep</td>
-                  <td class="${ styles.specTd }">Clinical Builds</td>
-                  <td class="${ styles.specTd }">Manufacturing</td>
-                </tr>
-                <tr>
-                  <td> ${OrdersNotDelivered[1][0]}</td>
-                  <td> ${OrdersNotDelivered[1][1]}</td>
-                  <td> ${OrdersNotDelivered[1][2]}</td>
-                  <td> ${OrdersNotDelivered[1][3]}</td>
-                </tr>
-              </table>
+              Open order amount  : ${OrdersSum}</br></br>
+              Open projects amount  : ${ProjectsSum}</br>
             </div>
 
             <div class="${ styles.SumsDiv }">
@@ -582,7 +591,7 @@ let getWeek = (d) =>{
 
       </div>`;
 
-    console.log(this.domElement);
+    // console.log(this.domElement);
     this.renderCompleted();
 
   }
@@ -614,10 +623,26 @@ let getWeek = (d) =>{
   }
 
 
+  // Backlog Old
+   // orders amount : ${OrdersNotDelivered[0]}</br>
+              // <table>
+              //   <tr>
+              //     <td class="${ styles.specTd }">Prototyping</td>
+              //     <td class="${ styles.specTd }">Mprep</td>
+              //     <td class="${ styles.specTd }">Clinical Builds</td>
+              //     <td class="${ styles.specTd }">Manufacturing</td>
+              //   </tr>
+              //   <tr>
+              //     <td> ${OrdersNotDelivered[1][0]}</td>
+              //     <td> ${OrdersNotDelivered[1][1]}</td>
+              //     <td> ${OrdersNotDelivered[1][2]}</td>
+              //     <td> ${OrdersNotDelivered[1][3]}</td>
+              //   </tr>
+              // </table>
 //**************************** returns the full lists *************************/
     public getListItems(listname:string, listContainerName:string = null): void {
 
-      console.log('asking list items for', listname);
+      // console.log('asking list items for', listname);
       this.ajaxCounter++;
 
       this.context.spHttpClient.get(
@@ -626,7 +651,7 @@ let getWeek = (d) =>{
             .then((response: SPHttpClientResponse) => {
                 response.json().then((data)=> {
 
-                    console.log('list items for', listname, data);
+                    // console.log('list items for', listname, data);
                     this.ajaxCounter--;
                     if (listContainerName) {
 
