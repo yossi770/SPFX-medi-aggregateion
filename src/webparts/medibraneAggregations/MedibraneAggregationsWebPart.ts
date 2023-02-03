@@ -420,8 +420,8 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
     // console.log(f, 'Expectations f');
     console.log('EmployeesHoursCost:', EmployeesHoursCost, 'ShipmentsCost:', ShipmentsCost, 'SupplierCost:', SupplierCost, 'rawmaterialcost:', rawmaterialcost, 'IncomeProject:', IncomeProject);
     // SupplierCost + rawmaterialcost  2022//
-    const RevenueFromExternalResources = ( SupplierCost + rawmaterialcost) * 1.2;
-    console.log('RevenueFromExternalResources', RevenueFromExternalResources, SupplierCost, rawmaterialcost);
+    // const RevenueFromExternalResources = ( SupplierCost + rawmaterialcost) * 1.2;
+    // console.log('RevenueFromExternalResources', RevenueFromExternalResources, SupplierCost, rawmaterialcost);
     
     const externalIncomeCost = (ShipmentsCost + SupplierCost + rawmaterialcost) * 1.2;
     // RevenueFromLabor += (IncomeProject - externalIncomeCost - EmployeesHoursCost);
@@ -776,7 +776,7 @@ export default class MedibraneAggregationsWebPart extends BaseClientSideWebPart<
               Revenue/employees/working days: ${Number(RevenueFromLaborBy.toFixed(0)).toLocaleString('en')}</br>
               Working: ${numWorkingDays}</br>
               Employees: ${NumEmployees}</br>
-              Revenue from external resources: ${Number(RevenueFromExternalResources.toFixed(0)).toLocaleString('en')}
+              Revenue from external resources: ${Number(externalIncomeCost.toFixed(0)).toLocaleString('en')}
             </div>
 
             <div class="${styles.SumsDiv}">
